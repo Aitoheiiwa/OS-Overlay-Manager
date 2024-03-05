@@ -104,9 +104,13 @@ public class OverlayManagerGUI {
 		bReset.addActionListener(new ActionListener() {
 			ScoreImage bScore = currentMatch.getBlueTeamScore();
 			ScoreImage rScore = currentMatch.getRedTeamScore();
+			JLabel bdisplayer = lBlueTeamScore;
+			JLabel rdisplayer = lRedTeamScore;
+			Path bdest = blueTeamScore;
+			Path rdest = redTeamScore;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				resetAction(bScore,rScore);
+				resetAction(bScore,rScore,bdest,rdest,bdisplayer,rdisplayer);
 			}
 		});
 		
@@ -195,9 +199,27 @@ public class OverlayManagerGUI {
 		}
 	}
 	
-	private static void resetAction(ScoreImage bScore, ScoreImage rScore) {
+	private static void resetAction(ScoreImage bScore, ScoreImage rScore,Path bDest,Path rDest,JLabel bdisplayer, JLabel rdisplayer) {
 		bScore.resetScore();
 		rScore.resetScore();
+		bdisplayer.setText("" + bScore.getScore());
+		rdisplayer.setText("" + rScore.getScore());
+		Path bSrc = bScore.getScorePath();
+		Path rSrc = rScore.getScorePath();
+		System.out.println(""+ bScore.getScore());
+		System.out.println(""+ rScore.getScore());
+		try {
+			Files.copy(bSrc, bDest,StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			Files.copy(rSrc, rDest,StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private static void matchSelectorAction(Match match, JComboBox<String> selector,Path dest) {

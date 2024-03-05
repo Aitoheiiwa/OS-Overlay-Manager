@@ -39,6 +39,11 @@ public class ScoreImage extends Score {
 		super.setTeam(team);
 		this.teamPath = teamPath(team);
 	}
+	@Override
+	public void resetScore() {
+		super.resetScore();
+		this.scorePath = scorePath(0);
+	}
 	
 	public static Path scorePath(int score) {
 		return Paths.get("./Assets/Score/_" + score + "_.png");
