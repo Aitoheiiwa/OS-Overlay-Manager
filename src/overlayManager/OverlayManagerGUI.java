@@ -26,6 +26,7 @@ public class OverlayManagerGUI {
 	private final Path redTeamScore =  Paths.get("./Displayed/red_Team_Score.png");
 	private final Path currentMatchImage =  Paths.get("./Displayed/current_Match.png");
 	private Match currentMatch = new Match("","","");
+	private MutableBoolean orientation = new MutableBoolean();
 
 	public OverlayManagerGUI(String [] teamName) {
 		
@@ -49,18 +50,24 @@ public class OverlayManagerGUI {
 		blueTeamSelector.addActionListener(new ActionListener() {
 			public Team team = currentMatch.getBlueTeamScore().getTeam();
 			public Path teamImage = blueTeamImage;
+			public MutableBoolean orient = orientation;
+			public String blueOrientation;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				teamSelectorAction(team, blueTeamSelector, teamImage);				
+				blueOrientation = orient.get() ? "blue" : "";
+				teamSelectorAction(team,blueOrientation, blueTeamSelector, teamImage);				
 			}
 		});
 
 		redTeamSelector.addActionListener(new ActionListener() {
 			public Team team = currentMatch.getRedTeamScore().getTeam();
 			public Path teamImage = redTeamImage;
+			public MutableBoolean orient = orientation;
+			public String redOrientation ;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				teamSelectorAction(team, redTeamSelector, teamImage);				
+				redOrientation = orient.get() ? "red" : "";
+				teamSelectorAction(team,redOrientation, redTeamSelector, teamImage);				
 			}
 		});
 		
@@ -114,9 +121,10 @@ public class OverlayManagerGUI {
 			}
 		});
 		
-		// Match label
+		// Match label 
 		
 		JLabel matchLabel = new JLabel("Match");
+
 		
 		// Match selector
 		
@@ -131,10 +139,25 @@ public class OverlayManagerGUI {
 			
 		});
 		
+		// Orientation button and panel
+		
+		JLabel lOrientation = new JLabel("Orientation");
+		JButton bOrientation = new JButton("" + this.orientation.get());
+		bOrientation.addActionListener(e -> {
+			orientation.flip();
+			bOrientation.setText("" + orientation.get());
+
+		});
+		
 		// Display
+		JPanel orientationPanel = new JPanel(new FlowLayout());
+		content.add(orientationPanel, BorderLayout.NORTH);
+		orientationPanel.add(lOrientation);
+		orientationPanel.add(bOrientation);
+		
 		
 		JPanel scorePanel = new JPanel(new FlowLayout());
-		content.add(scorePanel,BorderLayout.NORTH);
+		content.add(scorePanel,BorderLayout.CENTER);
 		scorePanel.add(blueTeamLabel);
 		scorePanel.add(blueTeamSelector);
 		scorePanel.add(lBlueTeamScore);
@@ -159,7 +182,7 @@ public class OverlayManagerGUI {
 		bReset.doClick();
 		
 		
-		window.setSize(700,135);
+		window.setSize(700,180);
 		window.setVisible(true);
 
 
@@ -174,9 +197,9 @@ public class OverlayManagerGUI {
 		new OverlayManagerGUI(Teams);
 	}
 	
-	private static void teamSelectorAction(Team team, JComboBox<String> selector,Path dest) {
+	private static void teamSelectorAction(Team team,String orientation,JComboBox<String> selector,Path dest) {
 		
-			team.setName(selector.getItemAt(selector.getSelectedIndex()));
+			team.setName( orientation + "_" + selector.getItemAt(selector.getSelectedIndex()));
 			Path src = ScoreImage.teamPath(team);
 			try {
 				Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
@@ -206,8 +229,6 @@ public class OverlayManagerGUI {
 		rdisplayer.setText("" + rScore.getScore());
 		Path bSrc = bScore.getScorePath();
 		Path rSrc = rScore.getScorePath();
-		System.out.println(""+ bScore.getScore());
-		System.out.println(""+ rScore.getScore());
 		try {
 			Files.copy(bSrc, bDest,StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
