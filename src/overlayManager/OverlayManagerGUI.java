@@ -20,11 +20,11 @@ import javax.swing.JPanel;
 public class OverlayManagerGUI {
 	
 	
-	private final Path blueTeamImage =  Paths.get("./Displayed/blue_Team.png");
-	private final Path redTeamImage =  Paths.get("./Displayed/red_Team.png");
-	private final Path blueTeamScore =  Paths.get("./Displayed/blue_Team_Score.png");
-	private final Path redTeamScore =  Paths.get("./Displayed/red_Team_Score.png");
-	private final Path currentMatchImage =  Paths.get("./Displayed/current_Match.png");
+	private final Path blueTeamImage =  Paths.get("../Displayed/blue_Team.png");
+	private final Path redTeamImage =  Paths.get("../Displayed/red_Team.png");
+	private final Path blueTeamScore =  Paths.get("../Displayed/blue_Team_Score.png");
+	private final Path redTeamScore =  Paths.get("../Displayed/red_Team_Score.png");
+	private final Path currentMatchImage =  Paths.get("../Displayed/current_Match.png");
 	private Match currentMatch = new Match("","","");
 	private MutableBoolean orientation = new MutableBoolean();
 

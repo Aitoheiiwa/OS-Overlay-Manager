@@ -10,7 +10,7 @@ public  class  Match {
 	private ScoreImage blueTeamScore;
 	private ScoreImage redTeamScore;
 	
-	private static final  String MATCHPATH = "./Assets/Match/";
+	private static final  String MATCHPATH = "../Assets/Match/";
 	
 	public static final String[] MATCHLIST = {"Unselected", 
 											  "Grand Final",

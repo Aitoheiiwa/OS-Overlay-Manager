@@ -46,15 +46,15 @@ public class ScoreImage extends Score {
 	}
 	
 	public static Path scorePath(int score) {
-		return Paths.get("./Assets/Score/_" + score + "_.png");
+		return Paths.get("../Assets/Score/_" + score + "_.png");
 	}
 	
 	public static Path teamPath(Team team) {
-		return Paths.get("./Assets/Teams/" + team.getName() + ".png");
+		return Paths.get("../Assets/Teams/" + team.getName() + ".png");
 	}
 	
 	public static Path teamPath(String teamName) {
-		return Paths.get("./Assets/Teams/" + teamName + ".png");
+		return Paths.get("../Assets/Teams/" + teamName + ".png");
 	}
 
 }
