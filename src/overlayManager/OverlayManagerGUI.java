@@ -2,13 +2,6 @@ package overlayManager;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -19,13 +12,7 @@ import javax.swing.JPanel;
 
 public class OverlayManagerGUI {
 	
-	
-	private final Path blueTeamImage =  Paths.get("../Displayed/blue_Team.png");
-	private final Path redTeamImage =  Paths.get("../Displayed/red_Team.png");
-	private final Path blueTeamScore =  Paths.get("../Displayed/blue_Team_Score.png");
-	private final Path redTeamScore =  Paths.get("../Displayed/red_Team_Score.png");
-	private final Path currentMatchImage =  Paths.get("../Displayed/current_Match.png");
-	private Match currentMatch = new Match("","","");
+	private BestOfX BoX = new BestOfX(new Match(""), new TeamImage(""), new TeamImage(""));
 	private MutableBoolean orientation = new MutableBoolean();
 
 	public OverlayManagerGUI(String [] teamName) {
@@ -46,29 +33,19 @@ public class OverlayManagerGUI {
 		JComboBox<String> redTeamSelector = new JComboBox<>(teamName);
 		
 		// Team selector Action
-		
-		blueTeamSelector.addActionListener(new ActionListener() {
-			public Team team = currentMatch.getBlueTeamScore().getTeam();
-			public Path teamImage = blueTeamImage;
-			public MutableBoolean orient = orientation;
-			public String blueOrientation;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				blueOrientation = orient.get() ? "blue" : "";
-				teamSelectorAction(team,blueOrientation, blueTeamSelector, teamImage);				
-			}
+		blueTeamSelector.addActionListener(evt -> {
+			String blueOrient = orientation.get() ? "blue_" : "";
+			BoX.getBlueTeam().setName(blueOrient + blueTeamSelector.getItemAt(blueTeamSelector.getSelectedIndex()));
+			BoX.updateBlueTeam();
 		});
 
-		redTeamSelector.addActionListener(new ActionListener() {
-			public Team team = currentMatch.getRedTeamScore().getTeam();
-			public Path teamImage = redTeamImage;
-			public MutableBoolean orient = orientation;
-			public String redOrientation ;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				redOrientation = orient.get() ? "red" : "";
-				teamSelectorAction(team,redOrientation, redTeamSelector, teamImage);				
-			}
+		
+		
+		
+		redTeamSelector.addActionListener(evt -> {
+			String redOrient = orientation.get() ? "red_" : "";
+			BoX.getRedTeam().setName(redOrient + redTeamSelector.getItemAt(redTeamSelector.getSelectedIndex()));
+			BoX.updateBlueTeam();
 		});
 		
 		// Blue and red team indicator 
@@ -77,48 +54,39 @@ public class OverlayManagerGUI {
 		 
 		// Score displayer
 		 
-		JLabel lBlueTeamScore = new JLabel("" + this.currentMatch.getBlueTeamScore().getScore());
-		JLabel lRedTeamScore = new JLabel("" + this.currentMatch.getRedTeamScore().getScore());
+		JLabel lBlueScore = new JLabel("" + BoX.getBlueScore());
+		JLabel lRedScore = new JLabel("" + BoX.getRedScore());
 		
 		// Score increment button
 		
 		JButton bBlueINC = new JButton("+");
 		JButton bRedINC = new JButton("+");
 		
-		bBlueINC.addActionListener(new ActionListener() {
-			ScoreImage score = currentMatch.getBlueTeamScore();
-			Path dest = blueTeamScore;
-			JLabel displayer = lBlueTeamScore;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incAction(score,dest,displayer);
-			}
+		bBlueINC.addActionListener(evt -> {
+			BoX.getBlueScore().addScore();
+			BoX.updateBlueScore();
+			lBlueScore.setText("" + BoX.getBlueScore().getScore());
 		});
 		
-		bRedINC.addActionListener(new ActionListener() {
-			ScoreImage score = currentMatch.getRedTeamScore();
-			Path dest = redTeamScore;
-			JLabel displayer = lRedTeamScore;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incAction(score,dest,displayer);
-			}
+		
+		bRedINC.addActionListener(evt -> {
+			BoX.getRedScore().addScore();
+			BoX.updateRedScore();
+			lRedScore.setText("" + BoX.getRedScore().getScore());
 		});
+		
 		
 		// Reset button
 		
 		JButton bReset = new JButton("Reset");
-		bReset.addActionListener(new ActionListener() {
-			ScoreImage bScore = currentMatch.getBlueTeamScore();
-			ScoreImage rScore = currentMatch.getRedTeamScore();
-			JLabel bdisplayer = lBlueTeamScore;
-			JLabel rdisplayer = lRedTeamScore;
-			Path bdest = blueTeamScore;
-			Path rdest = redTeamScore;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				resetAction(bScore,rScore,bdest,rdest,bdisplayer,rdisplayer);
-			}
+		
+		bReset.addActionListener(evt -> {
+			BoX.getBlueScore().resetScore();
+			BoX.getRedScore().resetScore();
+			BoX.updateRedScore();
+			BoX.updateBlueScore();
+			lBlueScore.setText("" + BoX.getBlueScore().getScore());
+			lRedScore.setText("" + BoX.getRedScore().getScore());
 		});
 		
 		// Match label 
@@ -129,23 +97,21 @@ public class OverlayManagerGUI {
 		// Match selector
 		
 		JComboBox<String> matchSelector = new JComboBox<>(Match.MATCHLIST);
-		matchSelector.addActionListener(new ActionListener() {
-			public Match match = currentMatch;
-			public Path matchImage = currentMatchImage;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				matchSelectorAction(match, matchSelector, matchImage);				
-			}
-			
+		
+		matchSelector.addActionListener(evt -> {
+			BoX.getMatch().setName(matchSelector.getItemAt(matchSelector.getSelectedIndex()));
+			BoX.updateMatch();
 		});
+		
 		
 		// Orientation button and panel
 		
 		JLabel lOrientation = new JLabel("Orientation");
-		JButton bOrientation = new JButton("" + this.orientation.get());
+		JButton bOrientation = new JButton("Off");
 		bOrientation.addActionListener(e -> {
 			orientation.flip();
-			bOrientation.setText("" + orientation.get());
+			String onOff = orientation.get() ? "On" : "Off";
+			bOrientation.setText(onOff);
 
 		});
 		
@@ -160,11 +126,11 @@ public class OverlayManagerGUI {
 		content.add(scorePanel,BorderLayout.CENTER);
 		scorePanel.add(blueTeamLabel);
 		scorePanel.add(blueTeamSelector);
-		scorePanel.add(lBlueTeamScore);
+		scorePanel.add(lBlueScore);
 		scorePanel.add(bBlueINC);
 		scorePanel.add(bReset);
 		scorePanel.add(bRedINC);
-		scorePanel.add(lRedTeamScore);
+		scorePanel.add(lRedScore);
 		scorePanel.add(redTeamSelector);
 		scorePanel.add(redTeamLabel);
 		
@@ -182,7 +148,7 @@ public class OverlayManagerGUI {
 		bReset.doClick();
 		
 		
-		window.setSize(700,180);
+		window.pack();
 		window.setVisible(true);
 
 
@@ -197,62 +163,4 @@ public class OverlayManagerGUI {
 		new OverlayManagerGUI(Teams);
 	}
 	
-	private static void teamSelectorAction(Team team,String orientation,JComboBox<String> selector,Path dest) {
-		
-			team.setName( orientation + "_" + selector.getItemAt(selector.getSelectedIndex()));
-			Path src = ScoreImage.teamPath(team);
-			try {
-				Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		
-	}
-	
-	private static void incAction(ScoreImage score, Path dest, JLabel displayer) {
-		score.addScore();
-		displayer.setText("" + score.getScore());
-		Path src = score.getScorePath();
-		try {
-			Files.copy(src, dest,StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private static void resetAction(ScoreImage bScore, ScoreImage rScore,Path bDest,Path rDest,JLabel bdisplayer, JLabel rdisplayer) {
-		bScore.resetScore();
-		rScore.resetScore();
-		bdisplayer.setText("" + bScore.getScore());
-		rdisplayer.setText("" + rScore.getScore());
-		Path bSrc = bScore.getScorePath();
-		Path rSrc = rScore.getScorePath();
-		try {
-			Files.copy(bSrc, bDest,StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			Files.copy(rSrc, rDest,StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private static void matchSelectorAction(Match match, JComboBox<String> selector,Path dest) {
-		match.setName(selector.getItemAt(selector.getSelectedIndex()));
-		Path src = match.getMatchPath();
-		try {
-			Files.copy(src,dest, StandardCopyOption.REPLACE_EXISTING);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-
 }

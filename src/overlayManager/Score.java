@@ -3,12 +3,10 @@ package overlayManager;
 public class Score {
 	
 	private int score;
-	private Team team;
 	
 	
-	public Score(String teamName) {
+	public Score() {
 		this.score = 0;
-		this.team = new Team(teamName);
 	}
 	
 	public void addScore(int x) {
@@ -25,17 +23,6 @@ public class Score {
 	
 	public void resetScore() {
 		this.score = 0;
-	}
-	
-	public void setTeam(Team team) {
-		this.team = team;
-	}
-	
-	public String getTeamName() {
-		return this.team.getName();
-	}
-	protected Team getTeam() {
-		return this.team;
 	}
 
 }
